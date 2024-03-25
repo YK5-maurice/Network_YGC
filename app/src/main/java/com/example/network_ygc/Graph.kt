@@ -4,8 +4,14 @@ class Graph {
 
 
     val listeNode = mutableListOf<Node>()
+
+    val listeArc = mutableListOf<Arc>()
     fun addNode(node: Node) {
         // Ajoute le nœud fourni en paramètre à la liste
         listeNode.add(node)
+    }
+
+    fun addArc(arc: Arc){
+        listeArc.add(arc)
     }
 }

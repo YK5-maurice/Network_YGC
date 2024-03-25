@@ -2,7 +2,7 @@ package com.example.network_ygc
 
 import android.graphics.RectF
 
-class Node(val x:Float, val y:Float, val radus:Float) : RectF()  {
+class Node(var x:Float, var y:Float, var radus:Float) : RectF()  {
 
 
     init {
