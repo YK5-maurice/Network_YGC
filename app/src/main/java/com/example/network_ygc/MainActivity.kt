@@ -154,14 +154,22 @@ class MainActivity : AppCompatActivity() {
 package com.example.network_ygc
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import android.view.GestureDetector
+import android.view.Menu
+import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
+import java.io.FileOutputStream
+import java.io.ObjectOutputStream
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
     lateinit var drawableGraph: DrawableGraph
@@ -174,6 +182,7 @@ class MainActivity : AppCompatActivity() {
     private var endX = 0f
     private var endY = 0f
     private var isDrawing = false
+
     // arc en cours de realisation
     private var currentArc: Arc? = null
 
@@ -181,6 +190,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
         var node = Node(225f, 332f, 52f)
         var node1 = Node(125f, 132f, 52f)
@@ -192,17 +204,23 @@ class MainActivity : AppCompatActivity() {
 
         val myImageView: ImageView = findViewById(R.id.myImageView)
 
-        gestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onLongPress(e: MotionEvent) {
-                val node = Node(e.x, e.y, 100f)
-                val x = e.y
-                val y = e.x
+        gestureDetector =
+            GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onLongPress(e: MotionEvent) {
+                    val node = Node(e.x, e.y, 100f)
+                    val x = e.y
+                    val y = e.x
 
-                graph.addNode(node)
-                drawableGraph = DrawableGraph(graph,currentArc)
-                myImageView.setImageDrawable(drawableGraph)
-            }
-        })
+                    graph.addNode(node)
+                    drawableGraph = DrawableGraph(graph, currentArc)
+                    myImageView.setImageDrawable(drawableGraph)
+                }
+            })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -216,16 +234,18 @@ class MainActivity : AppCompatActivity() {
                 currentArc = Arc(startX, startY, endX, endY)
                 invalidateMenu()
             }
+
             MotionEvent.ACTION_MOVE -> {
                 endX = event.x
                 endY = event.y
-                currentArc?.endX=event.x
-                currentArc?.endY=event.y
+                currentArc?.endX = event.x
+                currentArc?.endY = event.y
                 invalidateMenu()
             }
+
             MotionEvent.ACTION_UP -> {
                 isDrawing = false
-                var arc= Arc(startX, startY, endX, endY)
+                var arc = Arc(startX, startY, endX, endY)
                 graph.addArc(arc)
                 currentArc = null
                 invalidateMenu()
@@ -237,9 +257,82 @@ class MainActivity : AppCompatActivity() {
 
     override fun invalidateMenu() {
         if (isDrawing) {
-            drawableGraph = DrawableGraph(graph,currentArc)
+            drawableGraph = DrawableGraph(graph, currentArc)
             val myImageView: ImageView = findViewById(R.id.myImageView)
             myImageView.setImageDrawable(drawableGraph)
+        }
+    }
+
+
+    //partie pour la sauvegarde
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_reset -> {
+                // Logique pour réinitialiser le graphe
+                resetGraph()
+                true
+            }
+
+            R.id.action_save -> {
+                saveGraphToInternalStorage(graph)
+                true
+            }
+            /* R.id.action_load -> {
+                // Logique pour charger un graphe depuis la mémoire interne
+                true
+            }*/
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun resetGraph() {
+        // Effacer les données du graphe ou réinitialiser la structure de données
+        graph.clear() // Supprime tous les nœuds et les arcs du graphe
+
+        // Rafraîchir l'affichage du graphe après la réinitialisation (si nécessaire)
+        drawableGraph = DrawableGraph(graph)
+        val myImageView: ImageView = findViewById(R.id.myImageView)
+        myImageView.setImageDrawable(drawableGraph)
+
+        // Afficher un message de succès ou d'information
+        Toast.makeText(this, "Graphe réinitialisé", Toast.LENGTH_SHORT).show()
+    }
+
+    // Fonction pour sauvegarder le graphe dans la mémoire interne
+    private fun saveGraphToInternalStorage(graph: Graph) {
+        try {
+            // Nom du fichier de destination
+            val fileName = "graph_data.dat"
+
+            // Chemin complet du fichier de destination dans le stockage interne de l'application
+            val filePath = File(filesDir, fileName)
+
+            // Créer un nouveau fichier s'il n'existe pas
+            if (!filePath.exists()) {
+                filePath.createNewFile()
+            }
+
+            // Ouvrir un FileOutputStream pour écrire dans le fichier
+            val fileOutputStream = FileOutputStream(filePath)
+
+            // Créer un ObjectOutputStream pour écrire les données du graphe dans le flux de sortie
+            val objectOutputStream = ObjectOutputStream(fileOutputStream)
+
+            // Écrire le graphe dans le fichier
+            objectOutputStream.writeObject(graph)
+
+            // Fermer les flux
+            objectOutputStream.close()
+            fileOutputStream.close()
+
+            // Afficher un message de succès
+            Toast.makeText(this, "Graphe sauvegardé avec succès", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            // Gérer les erreurs éventuelles
+            e.printStackTrace()
+            Log.e("SaveGraph", "Erreur lors de la sauvegarde du graphe: ${e.message}")
+            Toast.makeText(this, "Erreur lors de la sauvegarde du graphe", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 }
