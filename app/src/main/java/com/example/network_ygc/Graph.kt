@@ -15,21 +15,22 @@ class Graph {
         listeNode.add(node)
     }
 
-    fun addArc(arc: Arc){
+    fun addArc(arc: Arc) {
         listeArc.add(arc)
     }
 
-<<<<<<< HEAD
-    fun removeNode(node: Node){
+
+    fun removeNode(node: Node) {
         listeNode.remove(node)
     }
 
-    fun removeArc(arc: Arc){
+    fun removeArc(arc: Arc) {
         listeArc.remove(arc)
-=======
-    fun clear() {
-        listeArc.clear()
-        listeNode.clear()
->>>>>>> 7577a14a07e8caea21e1d02a3fee4dca4d1ef8da
     }
+        fun clear() {
+            listeArc.clear()
+            listeNode.clear()
+
+        }
+
 }

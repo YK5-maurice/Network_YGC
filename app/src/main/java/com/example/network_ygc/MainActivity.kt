@@ -182,11 +182,11 @@ class MainActivity : AppCompatActivity() {
     private var endX = 0f
     private var endY = 0f
     private var isDrawing = false
-<<<<<<< HEAD
-    var boll=false
-=======
 
->>>>>>> 7577a14a07e8caea21e1d02a3fee4dca4d1ef8da
+    var boll=false
+
+
+
     // arc en cours de realisation
     private var currentArc: Arc? = null
 
@@ -195,16 +195,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-<<<<<<< HEAD
         var node = Node(1,225f, 332f, 52f,"b")
         var node1 = Node(2,125f, 132f, 52f,"c")
-=======
+
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        var node = Node(225f, 332f, 52f)
-        var node1 = Node(125f, 132f, 52f)
->>>>>>> 7577a14a07e8caea21e1d02a3fee4dca4d1ef8da
+
         graph.addNode(node)
         graph.addNode(node1)
 
@@ -213,7 +210,7 @@ class MainActivity : AppCompatActivity() {
 
         val myImageView: ImageView = findViewById(R.id.myImageView)
 
-<<<<<<< HEAD
+
         gestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
             lateinit var node5:Node
             override fun onLongPress(e: MotionEvent) {
@@ -238,25 +235,13 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
-=======
-        gestureDetector =
-            GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onLongPress(e: MotionEvent) {
-                    val node = Node(e.x, e.y, 100f)
-                    val x = e.y
-                    val y = e.x
 
-                    graph.addNode(node)
-                    drawableGraph = DrawableGraph(graph, currentArc)
-                    myImageView.setImageDrawable(drawableGraph)
-                }
-            })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
->>>>>>> 7577a14a07e8caea21e1d02a3fee4dca4d1ef8da
+
     }
 
     @SuppressLint("SuspiciousIndentation")
@@ -269,7 +254,6 @@ class MainActivity : AppCompatActivity() {
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                //boll=true
                 startX = event.x
                 startY = event.y
                 isDrawing = true
@@ -285,19 +269,15 @@ class MainActivity : AppCompatActivity() {
                 boll=true
                 endX = event.x
                 endY = event.y
-<<<<<<< HEAD
+
                 currentArc?.nodeEnd?.x=event.x
                 currentArc?.nodeEnd?.y=event.y
                     invalidateMenu()
-=======
-                currentArc?.endX = event.x
-                currentArc?.endY = event.y
-                invalidateMenu()
->>>>>>> 7577a14a07e8caea21e1d02a3fee4dca4d1ef8da
+
             }
 
             MotionEvent.ACTION_UP -> {
-<<<<<<< HEAD
+
 
                 if (boll && drawableGraph.rechercheNode(endX,endY,graph.listeNode)!=null && drawableGraph.rechercheNode(startX,startY,graph.listeNode)!=null) {
                     nodeStart=drawableGraph.rechercheNode(startX,startY,graph.listeNode)!!
@@ -308,11 +288,7 @@ class MainActivity : AppCompatActivity() {
                         graph.addArc(arc)
                     }
                 }
-=======
-                isDrawing = false
-                var arc = Arc(startX, startY, endX, endY)
-                graph.addArc(arc)
->>>>>>> 7577a14a07e8caea21e1d02a3fee4dca4d1ef8da
+
                 currentArc = null
                 invalidateMenu()
                 isDrawing = false
@@ -327,14 +303,10 @@ class MainActivity : AppCompatActivity() {
     override fun invalidateMenu() {
         drawableGraph = DrawableGraph(graph, currentArc)
         if (isDrawing) {
-<<<<<<< HEAD
+
                 val myImageView: ImageView = findViewById(R.id.myImageView)
                 myImageView.setImageDrawable(drawableGraph)
-=======
-            drawableGraph = DrawableGraph(graph, currentArc)
-            val myImageView: ImageView = findViewById(R.id.myImageView)
-            myImageView.setImageDrawable(drawableGraph)
->>>>>>> 7577a14a07e8caea21e1d02a3fee4dca4d1ef8da
+
         }
     }
 
