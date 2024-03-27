@@ -14,4 +14,12 @@ class Graph {
     fun addArc(arc: Arc){
         listeArc.add(arc)
     }
+
+    fun removeNode(node: Node){
+        listeNode.remove(node)
+    }
+
+    fun removeArc(arc: Arc){
+        listeArc.remove(arc)
+    }
 }
