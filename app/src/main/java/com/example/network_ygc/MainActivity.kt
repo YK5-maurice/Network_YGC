@@ -167,9 +167,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
+import com.google.gson.Gson
 import java.io.FileOutputStream
 import java.io.ObjectOutputStream
+import java.io.FileInputStream
+import java.io.ObjectInputStream
 import java.io.File
+import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     lateinit var drawableGraph: DrawableGraph
@@ -274,11 +278,34 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.action_save -> {
-                saveGraphToInternalStorage(graph)
+                    val context: Context = this
+                    val objet = graph
+                    val nomFichier = "objet.json"
+                    saveGraphInJson( context, objet, nomFichier)
+                    // Afficher un message de succès
+                    Toast.makeText(this, "Graphe sauvegardé avec succès", Toast.LENGTH_SHORT).show()
+
+              // saveGraphToInternalStorage(graph)
                 true
+
+
+
             }
             /* R.id.action_load -> {
                 // Logique pour charger un graphe depuis la mémoire interne
+                 val context: Context = this
+                 val nomFichier = "objet.json"
+                 val objet = chargerObjetDepuisJson(context, nomFichier)
+                 if (objet != null) {
+                     // L'objet a été chargé avec succès, faire quelque chose avec l'objet
+                    // println("Objet chargé depuis le fichier JSON : $objet")
+                     drawableGraph = DrawableGraph(objet)
+                     val myImageView: ImageView = findViewById(R.id.myImageView)
+                     myImageView.setImageDrawable(drawableGraph)
+                 } else {
+                     // Impossible de charger l'objet, gérer l'erreur
+                     println("Impossible de charger l'objet depuis le fichier JSON.")
+                 }
                 true
             }*/
             else -> super.onOptionsItemSelected(item)
@@ -334,5 +361,64 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Erreur lors de la sauvegarde du graphe", Toast.LENGTH_SHORT)
                 .show()
         }
+    }
+    //pour la sauvegarde  JSON
+    // Fonction pour enregistrer un objet de votre classe Kotlin en format JSON
+    fun saveGraphInJson(context: Context, objet: Graph, nomFichier: String) {
+        // Convertir l'objet en JSON en utilisant Gson
+        val gson = Gson()
+        val json = gson.toJson(objet)
+
+        // Enregistrer le JSON dans le stockage interne
+        context.openFileOutput(nomFichier, Context.MODE_PRIVATE).use {
+            it.write(json.toByteArray())
+        }
+    }
+    fun chargerObjetDepuisJson(context: Context, nomFichier: String): Graph? {
+        val fichier = File(context.filesDir, nomFichier)
+        if (!fichier.exists()) {
+            // Le fichier n'existe pas,  je retourne null ou gère l'erreur selon le besoin
+            Toast.makeText(this, "le fichier n'existe pas ", Toast.LENGTH_SHORT).show()
+            return null
+        }
+
+        try {
+            val json = fichier.readText() // Lire le contenu du fichier en tant que chaîne JSON
+            val gson = Gson()
+            return gson.fromJson(json, Graph::class.java) // Convertir le JSON en objet Kotlin
+        } catch (e: IOException) {
+            e.printStackTrace()
+            // Gérer l'exception selon le besoin
+            return null
+        }
+    }
+
+
+
+    // Fonction pour charger un graphe depuis la mémoire interne
+    private fun loadGraphFromInternalStorage(): Graph? {
+        var graph: Graph? = null
+        try {
+            // Ouvrir un FileInputStream pour lire à partir du fichier sur le stockage interne
+            val fileInputStream: FileInputStream = openFileInput("graph_data.dat")
+
+            // Créer un ObjectInputStream pour lire les données du graphe depuis le flux d'entrée
+            val objectInputStream = ObjectInputStream(fileInputStream)
+
+            // Lire le graphe depuis le fichier
+            graph = objectInputStream.readObject() as Graph?
+
+            // Fermer les flux
+            objectInputStream.close()
+            fileInputStream.close()
+
+            // Afficher un message de succès ou d'information
+            Toast.makeText(this, "Graphe chargé avec succès", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            // Gérer les erreurs éventuelles
+            e.printStackTrace()
+            Toast.makeText(this, "Erreur lors du chargement du graphe", Toast.LENGTH_SHORT).show()
+        }
+        return graph
     }
 }
