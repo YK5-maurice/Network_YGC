@@ -1,5 +1,5 @@
 /*
-package com.example.network_ygc
+package com.example .n etwork_ygc
 
 import android.annotation.SuppressLint
 import android.graphics.Paint
@@ -187,6 +187,10 @@ class MainActivity : AppCompatActivity() {
     private var endY = 0f
     private var isDrawing = false
 
+    var boll=false
+
+
+
     // arc en cours de realisation
     private var currentArc: Arc? = null
 
@@ -195,64 +199,105 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        var node = Node(1,225f, 332f, 52f,"b")
+        var node1 = Node(2,125f, 132f, 52f,"c")
+
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        var node = Node(225f, 332f, 52f)
-        var node1 = Node(125f, 132f, 52f)
+
         graph.addNode(node)
         graph.addNode(node1)
 
-        var arc = Arc(node.x, node.y, node1.x, node1.y)
+        var arc = Arc("a",node,node1)
         graph.addArc(arc)
 
         val myImageView: ImageView = findViewById(R.id.myImageView)
 
-        gestureDetector =
-            GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onLongPress(e: MotionEvent) {
-                    val node = Node(e.x, e.y, 100f)
-                    val x = e.y
-                    val y = e.x
+
+        gestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
+            lateinit var node5:Node
+            override fun onLongPress(e: MotionEvent) {
+                drawableGraph = DrawableGraph(graph,currentArc)
+
+
+              /*  if (drawableGraph.rechercheNode(e.x,e.y,graph.listeNode)!=null) {
+                   val node5=drawableGraph.rechercheNode(e.x,e.y,graph.listeNode)!!
+                    val a=node5.id
+                    val b=node5.label
+                    node5.x+=100f
+                    node5.y+=200f
+                    val node = Node(a,node5.x,node5.y, 52f,b)
+                    graph.addNode(node)
+                    myImageView.setImageDrawable(drawableGraph)
+                }else{*/
+                    val node = Node(0,e.x,e.y, 52f,"a")
 
                     graph.addNode(node)
-                    drawableGraph = DrawableGraph(graph, currentArc)
                     myImageView.setImageDrawable(drawableGraph)
-                }
-            })
+              //  }
+
+            }
+        })
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
+
     }
 
+    @SuppressLint("SuspiciousIndentation")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+
         gestureDetector.onTouchEvent(event)
+        drawableGraph = DrawableGraph(graph, currentArc)
+        var nodeEnd= Node (0,0f,0f,52f,"")
+       lateinit var nodeStart:Node
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 startX = event.x
                 startY = event.y
                 isDrawing = true
-                currentArc = Arc(startX, startY, endX, endY)
-                invalidateMenu()
+                if (drawableGraph.rechercheNode(startX,startY,graph.listeNode)!=null) {
+                    nodeStart=drawableGraph.rechercheNode(startX,startY,graph.listeNode)!!
+                currentArc=Arc("q",nodeStart,nodeEnd)
+                    invalidateMenu()
+                }
+
             }
 
             MotionEvent.ACTION_MOVE -> {
+                boll=true
                 endX = event.x
                 endY = event.y
-                currentArc?.endX = event.x
-                currentArc?.endY = event.y
-                invalidateMenu()
+
+                currentArc?.nodeEnd?.x=event.x
+                currentArc?.nodeEnd?.y=event.y
+                    invalidateMenu()
+
             }
 
             MotionEvent.ACTION_UP -> {
-                isDrawing = false
-                var arc = Arc(startX, startY, endX, endY)
-                graph.addArc(arc)
+
+
+                if (boll && drawableGraph.rechercheNode(endX,endY,graph.listeNode)!=null && drawableGraph.rechercheNode(startX,startY,graph.listeNode)!=null) {
+                    nodeStart=drawableGraph.rechercheNode(startX,startY,graph.listeNode)!!
+                    nodeEnd=drawableGraph.rechercheNode(endX,endY,graph.listeNode)!!
+                    currentArc=Arc("q",nodeStart,nodeEnd)
+                    var arc= currentArc
+                    if (arc != null) {
+                        graph.addArc(arc)
+                    }
+                }
+
                 currentArc = null
                 invalidateMenu()
+                isDrawing = false
+                boll=false
+
             }
         }
 
@@ -260,10 +305,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun invalidateMenu() {
+        drawableGraph = DrawableGraph(graph, currentArc)
         if (isDrawing) {
-            drawableGraph = DrawableGraph(graph, currentArc)
-            val myImageView: ImageView = findViewById(R.id.myImageView)
-            myImageView.setImageDrawable(drawableGraph)
+
+                val myImageView: ImageView = findViewById(R.id.myImageView)
+                myImageView.setImageDrawable(drawableGraph)
+
         }
     }
 

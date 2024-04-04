@@ -1,6 +1,4 @@
 package com.example.network_ygc
-import android.content.Context
-import com.google.gson.Gson
 
 class Graph {
 
@@ -25,6 +23,4 @@ class Graph {
         listeArc.clear()
         listeNode.clear()
     }
-
-
 }
