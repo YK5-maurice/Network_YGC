@@ -439,7 +439,7 @@ class MainActivity : AppCompatActivity() {
             return null
         }
     }
-
+        //l
 
 
     // Fonction pour charger un graphe depuis la mémoire interne
