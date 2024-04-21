@@ -251,12 +251,18 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SuspiciousIndentation")
     override fun onTouchEvent(event: MotionEvent): Boolean {
 
+         var isFingerOnArc = false
+         var fingerX = 0f
+         var fingerY = 0f
+
         gestureDetector.onTouchEvent(event)
         drawableGraph = DrawableGraph(graph, currentArc)
         var nodeEnd= Node (0,0f,0f,52f,"")
        lateinit var nodeStart:Node
 
         when (event.action) {
+
+
             MotionEvent.ACTION_DOWN -> {
                 startX = event.x
                 startY = event.y
@@ -266,7 +272,10 @@ class MainActivity : AppCompatActivity() {
                 currentArc=Arc("q",nodeStart,nodeEnd)
                     invalidateMenu()
                 }
-
+                //bonus
+                if (drawableGraph.isFingerOnArc(startX, startY, currentArc)) {
+                    isFingerOnArc = true
+                }
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -277,7 +286,12 @@ class MainActivity : AppCompatActivity() {
                 currentArc?.nodeEnd?.x=event.x
                 currentArc?.nodeEnd?.y=event.y
                     invalidateMenu()
-
+                //bonus
+                if (isFingerOnArc) {
+                    fingerX = event.x
+                    fingerY = event.y
+                    invalidateMenu()
+                }
             }
 
             MotionEvent.ACTION_UP -> {
@@ -297,6 +311,11 @@ class MainActivity : AppCompatActivity() {
                 invalidateMenu()
                 isDrawing = false
                 boll=false
+
+                if (isFingerOnArc) {
+                    isFingerOnArc = false
+                    invalidateMenu()
+                }
 
             }
         }
@@ -439,7 +458,7 @@ class MainActivity : AppCompatActivity() {
             return null
         }
     }
-        //l
+        //lv
 
 
     // Fonction pour charger un graphe depuis la mémoire interne
